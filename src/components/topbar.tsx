@@ -12,7 +12,7 @@ const Topbar = () => {
               </div>
 
               <div className="flex items-center space-x-3 md:space-x-4 text-xs md:text-sm text-black">
-                    <Link href={"/"} className="" >Find a Store</Link>
+                    <Link href={"/store"} className="" >Find a Store</Link>
                     <span>|</span>
                     <Link href={"/help"}>Help</Link>
                     <span>|</span>
