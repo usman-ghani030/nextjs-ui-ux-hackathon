@@ -1,125 +1,110 @@
-"use client";
-
-import React from "react";
-import Image from "next/image";
-import { Heart, Trash2 } from "lucide-react";
-import Link from "next/link";
+"use client"
+import { CarouselSize } from "@/components/HeroCarousel"
+import { Button } from "@/components/ui/button"
+import { useCart } from "@/context/context"
+import { urlFor } from "@/sanity/lib/image"
+import { IconButton,  Tooltip } from "@mui/material"
+import {  Heart, Trash2 } from "lucide-react"
+import Image from "next/image"
+import IncDec from "./quantity"
+import Link from "next/link"
 
 export default function Cart() {
-  return (
-    <div className="min-h-screen bg-white flex items-center justify-center py-6 px-4 sm:px-8">
-      <div className="max-w-5xl w-full bg-white p-4 sm:p-6 space-y-8">
-        <div className="bg-gray-100 p-4 sm:p-6 rounded-lg md:w-2/3 mx-auto md:mx-0">
-          <h2 className="text-lg font-bold mb-2 text-center md:text-left">
-            Free delivery
-          </h2>
-          <p className="text-sm text-gray-600 mb-4 text-center md:text-left">
-            Applies to orders of ₹ 14,000.00 or more.
-          </p>
-          <a
-            href="#"
-            className="text-sm text-black underline block text-center md:text-left"
-          >
-            View details
-          </a>
-        </div>
+    const { cart,removeFromCart,updateCartQuantity } = useCart()
+    return (
+        <main className="max-w-[1200px] mx-auto  mt-14">
+            {cart.length > 0 ? (
+                <div className="lg:flex lg:gap-x-14  xl:gap-x-20">
 
-        
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-         
-          <div className="md:col-span-2 space-y-8">
-            <h2 className="text-2xl font-bold">Bag</h2>
 
-           
-            <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between pb-8 border-b">
-              <Image
-                src="/product/c1.jpg"
-                alt="Nike Dri-FIT ADV TechKnit Ultra"
-                width={120}
-                height={120}
-                className="rounded-md mb-4 sm:mb-0"
-              />
-              <div className="ml-0 sm:ml-4 flex-1 space-y-2">
-                <h3 className="font-medium text-lg text-gray-800">
-                  Nike Dri-FIT ADV TechKnit Ultra
-                </h3>
-                <p className="text-gray-600 text-sm">
-                  Men's Short-Sleeve Running Top
-                </p>
-                <p className="text-gray-500 text-sm">
-                  Ashen Slate/Cobalt Bliss
-                </p>
-                <p className="text-gray-500 text-sm">Size: L | Quantity: 1</p>
-                <div className="flex mt-4">
-                  <button className="text-gray-500 hover:text-black mr-4">
-                    <Heart size={20} />
-                  </button>
-                  <button className="text-gray-500 hover:text-black">
-                    <Trash2 size={20} />
-                  </button>
+                    <section className=" ">
+                        <div className="bg-[#F5F5F5] p-4">
+                            <h1 className="font-semibold">Free Delivery</h1>
+                            <p className="text-sm">Applies to orders of ₹ 14 000.00 or more. <u className="font-semibold">View Details</u> </p>
+                        </div>
+                        <div className="mt-4 mb-10 ">
+                            <h2 className="font-semibold text-xl">Bag</h2>
+
+                            {cart.map((item) => {
+                                return (
+                                    <div key={item._id} className="md:flex md:space-x-10 mx-20 md:mx-0 mt-6">
+                                        <Link href={`/product/${item._id}`}>
+                                            <Image src={urlFor(item.image).width(200).url()} alt={"shoe"} width={200} height={200} />
+                                        </Link>
+                                        <div className="space-y-8">
+                                            <div className="md:flex justify-between font-semibold text-[12px] md:text-md md:gap-x-24">
+                                                <h1>{item.name}</h1>
+                                                <p>MRP: ₹ {(item.price * (item.quantity ?? 0)).toFixed(2)}</p>
+                                            </div>
+                                            <div className="space-y-2">
+                                                <h2 className="text-sm text-[#757575]">{item.category}</h2>
+                                                <h2 className="text-sm text-[#757575]">{item.status}</h2>
+                                                <h2 className="text-sm text-[#757575] ">Size : L<span className=" flex">Qantity: <IncDec quantity={item.quantity ?? 0} updateQuantity={(newQuantity)=>updateCartQuantity(item._id,newQuantity)} /></span></h2>
+                                            </div>
+                                            <div className="flex gap-4 ">
+                                                <div>
+                                                <Tooltip title="wishlist">
+                                                    <IconButton >
+                                                    
+                                                    <Heart />
+                                                    </IconButton>
+                                                </Tooltip>
+                                                </div>
+                                                
+                                                <div>
+                                                <Tooltip title="Delete">
+                                                <IconButton onClick={()=>removeFromCart(item._id)}>
+                                                    
+                                                    <Trash2 />
+                                                </IconButton>
+                                                </Tooltip>
+                                                </div>
+                                                
+                                             </div>
+
+                                        </div>
+                                    </div>
+                                    // <hr className="my-6"/>
+
+
+                                )
+                            })}
+                        </div>
+                    </section>
+                    <section className=" flex flex-col ">
+                        <h1 className="font-semibold mb-6">Summary</h1>
+                        <div className="flex font-medium text-sm justify-between">
+                            <h1>Subtotal</h1>
+                            <h2>{cart.reduce((acc, item) => acc + (item.price) * (item.quantity ?? 0),0).toFixed(2)}</h2>
+                        </div>
+                        <div className="flex font-medium text-sm space-x-40 justify-between my-4">
+                            <h1>Estimated Delivery & Handling</h1>
+                            <h2>Free</h2>
+                        </div>
+                        <hr />
+                        <div className="flex font-semibold text-sm space-x-40 justify-between my-4">
+                            <h1>Total</h1>
+                            <h2>{cart.reduce((acc, item) => acc + (item.price) * (item.quantity ?? 0),0).toFixed(2)}</h2>
+                        </div>
+                        <hr />
+
+                     <Link href={'/checkout'}><Button className="mt-6 rounded-full h-16">Member Checkout</Button></Link>   
+                    </section>
                 </div>
-              </div>
-              <div className="text-right mt-4 sm:mt-0">
-                <p className="font-medium text-lg">₹ 3,895.00</p>
-              </div>
-            </div>
-
+            ) : (
+                <div>
+                    <div className="bg-[#F5F5F5] p-4">
+                        <h1 className="font-semibold">Free Delivery</h1>
+                        <p className="text-sm">Applies to orders of ₹ 14 000.00 or more. <u className="font-semibold">View Details</u> </p>
+                    </div>
+                    <h1 className="font-semibold my-10 ml-1">YOUR CART IS EMPTY</h1>
+                </div>
+            )}
             
-            <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between pb-8 border-b">
-              <Image
-                src="/product/c2.jpg"
-                alt="Nike Air Max 97 SE"
-                width={120}
-                height={120}
-                className="rounded-md mb-4 sm:mb-0"
-              />
-              <div className="ml-0 sm:ml-4 flex-1 space-y-2">
-                <h3 className="font-medium text-lg text-gray-800">
-                  Nike Air Max 97 SE
-                </h3>
-                <p className="text-gray-600 text-sm">Men's Shoes</p>
-                <p className="text-gray-500 text-sm">
-                  Flat Pewter/Light Bone/Black/White
-                </p>
-                <p className="text-gray-500 text-sm">Size: 8 | Quantity: 1</p>
-                <div className="flex mt-4">
-                  <button className="text-gray-500 hover:text-black mr-4">
-                    <Heart size={20} />
-                  </button>
-                  <button className="text-gray-500 hover:text-black">
-                    <Trash2 size={20} />
-                  </button>
-                </div>
-              </div>
-              <div className="text-right mt-4 sm:mt-0">
-                <p className="font-medium text-lg">₹ 16,995.00</p>
-              </div>
+            <div className="pb-10">
+                <h1 className="font-semibold text-xl ml-3 my-8">You Might Also Like This</h1>
+                <CarouselSize />
             </div>
-          </div>
-
-        
-          <div className="rounded-lg bg-gray-50 p-4 sm:p-6 space-y-6">
-            <h2 className="text-2xl font-medium">Summary</h2>
-            <div className="flex justify-between">
-              <p className="text-gray-600">Subtotal</p>
-              <p className="font-medium">₹ 20,890.00</p>
-            </div>
-            <div className="flex justify-between">
-              <p className="text-gray-600">Estimated Delivery & Handling</p>
-              <p className="font-medium">Free</p>
-            </div>
-            <div className="flex justify-between text-xl font-medium pt-4 border-t">
-              <p>Total</p>
-              <p>₹ 20,890.00</p>
-            </div>
-            <Link href="/checkout">
-              <button className="w-full bg-black text-white font-medium py-4 rounded-[30px] mt-6">
-                Member Checkout
-              </button>
-            </Link>
-          </div>
-        </div>
-      </div>
-    </div>
-  );
+        </main>
+    )
 }
